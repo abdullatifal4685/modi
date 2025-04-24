@@ -300,16 +300,16 @@
     <div id="chatbox"></div>
     <div id="predefined-prompts">
       <div class="prompt">
-        <i class="fas fa-lightbulb"></i> What is Knowledge Management?
+        <i class="fas fa-lightbulb"></i> Can you explain Knowledge Management? 😊
       </div>
       <div class="prompt">
-        <i class="fas fa-book"></i> Tell me about Learning Organization
+        <i class="fas fa-book"></i> What’s a Learning Organization? 🌱
       </div>
       <div class="prompt">
-        <i class="fas fa-tasks"></i> What are the steps in Knowledge Management?
+        <i class="fas fa-tasks"></i> How do I start with Knowledge Management? 💡
       </div>
       <div class="prompt">
-        <i class="fas fa-briefcase"></i> What services does MODI offer?
+        <i class="fas fa-briefcase"></i> What services does MODI offer? 🤔
       </div>
     </div>
     <div id="input-area">
@@ -367,12 +367,12 @@
         const data = await response.json();
         if (data.error) {
           console.error("Backend Error:", data.error);
-          return `Error: ${data.error}`;
+          return `Oops, something went wrong! 😔 Please try again later.`;
         }
-        return data.reply || "Sorry, I didn't understand that.";
+        return data.reply || "Hmm, I’m not sure about that. Could you rephrase it? 😊";
       } catch (error) {
         console.error("Fetch Error:", error);
-        return "Sorry, something went wrong.";
+        return "Oh no! 😔 I couldn’t connect to the server. Please check your connection and try again.";
       }
     }
 
@@ -479,6 +479,8 @@
 
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = "en-US"; // Set language
+      utterance.pitch = 1.2; // Slightly higher pitch for a friendly tone
+      utterance.rate = 1; // Normal speaking rate
 
       utterance.onend = () => {
         isSpeaking = false; // Reset flag after speaking
