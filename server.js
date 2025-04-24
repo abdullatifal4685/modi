@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 5000;
 
 // Dialogflow ES setup
 const sessionClient = new dialogflow.SessionsClient({
-  keyFilename: "dialogflow-key.json", // Path to your new Dialogflow ES key file
+  keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS, // Use the environment variable
 });
 
 const projectId = "chatbotagent-tfft"; // Replace with your Dialogflow ES project ID
