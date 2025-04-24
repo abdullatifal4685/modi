@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MODI Chatbot</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <style>
+    /* General Styles */
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: linear-gradient(135deg, #005bac, #0073e6);
+      background-size: 400% 400%;
+      animation: gradientAnimation 10s ease infinite;
+      overflow: hidden;
+    }
+
+    @keyframes gradientAnimation {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    /* Homepage Styles */
+    #homepage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #homepage-content {
+      position: relative;
+      z-index: 2;
+      color: white;
+      text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px); /* Glassmorphism effect */
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      animation: fadeIn 1.5s ease-in-out;
+    }
+
+    #homepage img {
+      width: 120px; /* Adjust the size of the logo */
+      height: auto;
+      margin-bottom: -20px; /* Add spacing below the logo */
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    #homepage h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 3.5rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      margin-bottom: 20px;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    #homepage p {
+      font-family: 'Roboto', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 400;
+      margin-bottom: 25px;
+      line-height: 1.6;
+      animation: fadeIn 1.5s ease-in-out;
+    }
+
+    #start-btn {
+      padding: 15px 40px;
+      font-size: 1.2rem;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      color: white;
+      background-color: #005bac;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+      animation: fadeIn 2s ease-in-out;
+    }
+
+    #start-btn:hover {
+      background-color: #0073e6;
+      transform: scale(1.1);
+      box-shadow: 0 0 20px rgba(0, 115, 230, 0.8);
+    }
+
+    /* Chat Container */
+    #chat-container {
+      display: none;
+      flex-direction: column;
+      width: 90%;
+      max-width: 800px;
+      height: 80%;
+      background: linear-gradient(135deg, #ffffff, #f0f2f5);
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+
+    /* Header */
+    #header {
+      background-color: #005bac;
+      color: white;
+      padding: 20px 20px; /* Increase top padding to move text lower */
+      text-align: center;
+      font-size: 1.8rem;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+    }
+
+    #header img {
+      width: 50px; /* Adjust the size of the logo */
+      height: auto;
+      margin-right: 10px; /* Add spacing to the right of the logo */
+      vertical-align: middle; /* Align the logo vertically with the text */
+    }
+
+    /* Chatbox */
+    #chatbox {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background-color: #ffffff;
+    }
+
+    /* Message Styles */
+    .message {
+      max-width: 70%;
+      padding: 12px 18px;
+      border-radius: 20px;
+      font-size: 1rem;
+      font-family: 'Roboto', sans-serif;
+      font-weight: 400;
+      line-height: 1.5;
+      animation: fadeIn 0.3s ease-in-out;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .user-message {
+      align-self: flex-end;
+      background-color: #005bac;
+      color: white;
+    }
+
+    .bot-message {
+      align-self: flex-start;
+      background-color: #e6f7e6;
+      color: black;
+    }
+
+    /* Input Area */
+    #input-area {
+      display: flex;
+      padding: 15px;
+      background-color: #ffffff;
+      border-top: 1px solid #ddd;
+      border-radius: 0 0 15px 15px;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    #user-input {
+      flex: 1;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 25px;
+      font-size: 1rem;
+      font-family: 'Roboto', sans-serif;
+      font-weight: 400;
+      outline: none;
+      transition: box-shadow 0.3s ease;
+    }
+
+    #user-input:focus {
+      box-shadow: 0 0 10px rgba(0, 91, 172, 0.8);
+    }
+
+    #send-btn, #voice-btn {
+      margin-left: 10px; /* Add spacing between buttons */
+      padding: 12px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%; /* Make it circular */
+      background-color: #005bac;
+      color: white;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem; /* Adjust icon size */
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    }
+
+    #send-btn:hover, #voice-btn:hover {
+      background-color: #0073e6;
+      transform: scale(1.1); /* Slightly enlarge on hover */
+      box-shadow: 0 0 20px rgba(0, 115, 230, 0.8);
+    }
+
+    #voice-btn.active {
+      background-color: #0073e6; /* Active state color */
+      box-shadow: 0 0 20px rgba(0, 115, 230, 0.8);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Predefined Prompts Styles */
+    #predefined-prompts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 15px 0;
+      justify-content: flex-start; /* Align prompts to the left */
+      padding: 10px 20px;
+    }
+
+    .prompt {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 15px;
+      font-size: 0.9rem;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 500;
+      color: #333; /* Darker text for better readability */
+      background-color: #ffffff; /* White background to match the chat */
+      border: 1px solid #ddd; /* Light border for separation */
+      border-radius: 15px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    }
+
+    .prompt i {
+      font-size: 1rem; /* Icon size */
+      color: #0073e6; /* Icon color to match the theme */
+    }
+
+    .prompt:hover {
+      background-color: #f0f8ff; /* Slightly blue background on hover */
+      transform: translateY(-2px); /* Slight lift effect */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow on hover */
+    }
+  </style>
+</head>
+<body>
+  <!-- Homepage -->
+  <div id="homepage">
+    <div id="homepage-content">
+      <!-- Add your logo here -->
+      <img src="logo.png" alt="MODI Logo">
+      <h1>Welcome to MODI</h1>
+      <p>Ministry of Finance Digital Intelligence</p>
+      <p>Ask me anything about Knowledge Management and Learning Organization</p>
+      <button id="start-btn">Start</button>
+    </div>
+  </div>
+
+  <!-- Chat Interface -->
+  <div id="chat-container">
+    <div id="header">
+      <!-- Add your logo here -->
+      <img src="logo.png" alt="MODI Logo">
+      Welcome to MODI
+    </div>
+    <div id="chatbox"></div>
+    <div id="predefined-prompts">
+      <div class="prompt">
+        <i class="fas fa-lightbulb"></i> What is Knowledge Management?
+      </div>
+      <div class="prompt">
+        <i class="fas fa-book"></i> Tell me about Learning Organization
+      </div>
+      <div class="prompt">
+        <i class="fas fa-tasks"></i> What are the steps in Knowledge Management?
+      </div>
+      <div class="prompt">
+        <i class="fas fa-briefcase"></i> What services does MODI offer?
+      </div>
+    </div>
+    <div id="input-area">
+      <input type="text" id="user-input" placeholder="Ask me anything about LO or KM..." />
+      <button id="send-btn">
+        <i class="fas fa-paper-plane"></i>
+      </button>
+      <button id="voice-btn" class="input-mode">
+        <i class="fas fa-microphone"></i>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const homepage = document.getElementById("homepage");
+    const chatContainer = document.getElementById("chat-container");
+    const startBtn = document.getElementById("start-btn");
+    const chatbox = document.getElementById("chatbox");
+    const userInput = document.getElementById("user-input");
+    const sendBtn = document.getElementById("send-btn");
+    const voiceBtn = document.getElementById("voice-btn");
+
+    let isVoiceMode = false; // Track whether voice input mode is active
+    let recognition; // Speech recognition instance
+    let isSpeaking = false; // Flag to track if the bot is speaking
+
+    // Show chat interface when "Start" is clicked
+    startBtn.addEventListener("click", () => {
+      homepage.style.display = "none";
+      chatContainer.style.display = "flex";
+    });
+
+    // Add message to chatbox
+    function addMessageToChatbox(sender, message) {
+      const messageDiv = document.createElement("div");
+      messageDiv.classList.add("message", sender === "You" ? "user-message" : "bot-message");
+      messageDiv.textContent = message;
+      chatbox.appendChild(messageDiv);
+      chatbox.scrollTop = chatbox.scrollHeight; // Auto-scroll to the latest message
+    }
+
+    // Fetch chatbot response from the backend
+    async function getChatbotResponse(message) {
+      try {
+        // Add "Typing..." indicator
+        const typingMessage = document.createElement("div");
+        typingMessage.classList.add("message", "bot-message");
+        typingMessage.textContent = "Typing...";
+        chatbox.appendChild(typingMessage);
+        chatbox.scrollTop = chatbox.scrollHeight;
+
+        const response = await fetch("http://localhost:5000/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ input: message }),
+        });
+
+        const data = await response.json();
+        console.log("Backend Response:", data);
+
+        // Remove "Typing..." indicator
+        chatbox.removeChild(typingMessage);
+
+        if (data.error) {
+          console.error("Backend Error:", data.error);
+          return `Error: ${data.error}`;
+        }
+        return data.reply || "Sorry, I didn't understand that.";
+      } catch (error) {
+        console.error("Fetch Error:", error);
+        return "Sorry, something went wrong.";
+      }
+    }
+
+    // Handle send button click
+    sendBtn.addEventListener("click", async () => {
+      const message = userInput.value.trim();
+      if (!message) return;
+      addMessageToChatbox("You", message);
+      userInput.value = "";
+      const response = await getChatbotResponse(message);
+      addMessageToChatbox("Chatbot", response);
+
+      // Speak the bot's response if voice mode is active
+      if (isVoiceMode) {
+        speak(response);
+      }
+    });
+
+    // Handle Enter key press
+    userInput.addEventListener("keypress", async (event) => {
+      if (event.key === "Enter") {
+        const message = userInput.value.trim();
+        if (!message) return;
+        addMessageToChatbox("You", message);
+        userInput.value = "";
+        const response = await getChatbotResponse(message);
+        addMessageToChatbox("Chatbot", response);
+
+        // Speak the bot's response if voice mode is active
+        if (isVoiceMode) {
+          speak(response);
+        }
+      }
+    });
+
+    // Toggle voice input mode
+    voiceBtn.addEventListener("click", () => {
+      isVoiceMode = !isVoiceMode; // Toggle voice mode
+      voiceBtn.classList.toggle("active", isVoiceMode); // Change button appearance
+
+      // Toggle icons between microphone and stop
+      const icon = voiceBtn.querySelector("i");
+      if (isVoiceMode) {
+        icon.classList.remove("fa-microphone");
+        icon.classList.add("fa-stop");
+        startVoiceInput(); // Start listening for voice input
+      } else {
+        icon.classList.remove("fa-stop");
+        icon.classList.add("fa-microphone");
+        if (recognition) recognition.stop(); // Stop listening if voice mode is disabled
+      }
+    });
+
+    // Voice Input (Speech-to-Speech)
+    function startVoiceInput() {
+      if (!recognition) {
+        recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = "en-US"; // Set language
+        recognition.continuous = true; // Keep listening continuously
+
+        recognition.onresult = (event) => {
+          if (isSpeaking) return; // Ignore input while the bot is speaking
+
+          const voiceInput = event.results[event.results.length - 1][0].transcript;
+          console.log("User said:", voiceInput);
+          addMessageToChatbox("You", voiceInput);
+          getChatbotResponse(voiceInput).then((response) => {
+            addMessageToChatbox("Chatbot", response);
+
+            // Speak the bot's response
+            speak(response);
+          });
+        };
+
+        recognition.onerror = (event) => {
+          console.error("Speech Recognition Error:", event.error);
+        };
+
+        recognition.onend = () => {
+          if (isVoiceMode) {
+            recognition.start(); // Restart recognition if voice mode is still active
+          }
+        };
+      }
+
+      // Request microphone permission when starting voice input
+      navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(() => {
+          recognition.start(); // Start recognition if permission is granted
+        })
+        .catch((error) => {
+          console.error("Microphone permission denied:", error);
+          isVoiceMode = false; // Disable voice mode
+          voiceBtn.classList.remove("active"); // Reset button appearance
+          const icon = voiceBtn.querySelector("i");
+          icon.classList.remove("fa-stop");
+          icon.classList.add("fa-microphone");
+        });
+    }
+
+    // Voice Output (Text-to-Speech)
+    function speak(text) {
+      isSpeaking = true; // Set flag to true while speaking
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "en-US"; // Set language
+
+      utterance.onend = () => {
+        isSpeaking = false; // Reset flag after speaking
+      };
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    // Handle predefined prompt button clicks
+    const promptButtons = document.querySelectorAll(".prompt-btn");
+
+    promptButtons.forEach((button) => {
+      button.addEventListener("click", async () => {
+        const message = button.textContent; // Get the text of the clicked button
+        addMessageToChatbox("You", message); // Add the message to the chatbox
+        const response = await getChatbotResponse(message); // Fetch the chatbot response
+        addMessageToChatbox("Chatbot", response); // Display the chatbot response
+
+        // Speak the bot's response if voice mode is active
+        if (isVoiceMode) {
+          speak(response);
+        }
+      });
+    });
+
+    // Handle predefined prompt clicks
+    const promptElements = document.querySelectorAll(".prompt");
+    const predefinedPromptsContainer = document.getElementById("predefined-prompts");
+
+    promptElements.forEach((prompt) => {
+      prompt.addEventListener("click", async () => {
+        const message = prompt.textContent.trim(); // Get the text of the clicked prompt
+        addMessageToChatbox("You", message); // Add the message to the chatbox
+        const response = await getChatbotResponse(message); // Fetch the chatbot response
+        addMessageToChatbox("Chatbot", response); // Display the chatbot response
+
+        // Hide the predefined prompts container
+        predefinedPromptsContainer.style.display = "none";
+
+        // Speak the bot's response if voice mode is active
+        if (isVoiceMode) {
+          speak(response);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
