@@ -354,6 +354,11 @@
     // Fetch chatbot response from the backend
     async function getChatbotResponse(message) {
       try {
+        // Determine the base URL dynamically
+        const baseUrl = window.location.hostname === "localhost"
+          ? "http://localhost:5000"
+          : "https://modi-v5cq.onrender.com";
+
         // Add "Typing..." indicator
         const typingMessage = document.createElement("div");
         typingMessage.classList.add("message", "bot-message");
@@ -361,7 +366,8 @@
         chatbox.appendChild(typingMessage);
         chatbox.scrollTop = chatbox.scrollHeight;
 
-        const response = await fetch("http://localhost:5000/chat", {
+        // Make the fetch call
+        const response = await fetch(`${baseUrl}/chat`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
