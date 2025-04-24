@@ -352,16 +352,11 @@
     }
 
     // Fetch chatbot response from the backend
+    const baseUrl = "https://modi-v5cq.onrender.com"; // Use the deployed URL
+
     async function getChatbotResponse(message) {
       try {
-        // Add "Typing..." indicator
-        const typingMessage = document.createElement("div");
-        typingMessage.classList.add("message", "bot-message");
-        typingMessage.textContent = "Typing...";
-        chatbox.appendChild(typingMessage);
-        chatbox.scrollTop = chatbox.scrollHeight;
-
-        const response = await fetch("http://localhost:5000/chat", {
+        const response = await fetch(`${baseUrl}/chat`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -370,11 +365,6 @@
         });
 
         const data = await response.json();
-        console.log("Backend Response:", data);
-
-        // Remove "Typing..." indicator
-        chatbox.removeChild(typingMessage);
-
         if (data.error) {
           console.error("Backend Error:", data.error);
           return `Error: ${data.error}`;
