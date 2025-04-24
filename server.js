@@ -73,7 +73,7 @@ app.post("/webhook", (req, res) => {
   let responseText = "Hmm, let me think... 🤔 ";
 
   // Add dynamic content based on the intent
-  if (intentName === "Learning Organization") {
+  if (intentName === "What_is_Learning_Organization") {
     responseText += "A Learning Organization is a system that helps people grow and learn together. 🌱 It's all about teamwork and continuous improvement! Let me know if you'd like more details. 😊";
   } else if (intentName === "Knowledge Management") {
     responseText += "Knowledge Management is about sharing and managing knowledge to help everyone succeed. 📚 It's like building a library of wisdom for your team! How can I help you with this? 😊";
