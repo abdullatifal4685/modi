@@ -70,18 +70,18 @@ app.post("/webhook", (req, res) => {
   console.log(`User Input: ${userInput}`);
 
   // Friendly and empathetic persona response
-  let responseText = "Hmm, let me think... 🤔 ";
+  let responseText = "";
 
   // Add dynamic content based on the intent
   if (intentName === "What_is_Learning_Organization") {
-    responseText += "A Learning Organization is a system that helps people grow and learn together. It's all about teamwork and continuous improvement! Let me know if you'd like more details. 😊";
+    responseText = "Oh, that's a great question! 🌟 A Learning Organization is a system that helps people grow and learn together. It's all about teamwork and continuous improvement! Let me know if you'd like more details. 😊";
   } else if (intentName === "Knowledge Management") {
-    responseText += "Knowledge Management is about sharing and managing knowledge to help everyone succeed. It's like building a library of wisdom for your team! How can I help you with this? 😊";
+    responseText = "I'm glad you asked! 📚 Knowledge Management is about sharing and managing knowledge to help everyone succeed. It's like building a library of wisdom for your team! How can I assist you further? 😊";
   } else if (intentName === "Default Welcome Intent") {
-    responseText = "Hey there! I'm MODI, your friendly assistant. How can I make your day better? 😊";
+    responseText = "Hi there! 👋 I'm MODI, your friendly assistant. How can I brighten your day today? 😊";
   } else {
     // Default fallback response
-    responseText = "I'm here to help! 😊 Could you tell me a bit more about what you're looking for?";
+    responseText = "Hmm, I’m not sure about that, but I’d love to help! Could you try rephrasing your question? 💡";
   }
 
   // Send the response back to Dialogflow
