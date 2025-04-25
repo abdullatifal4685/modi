@@ -13,15 +13,15 @@ const sessionClient = new dialogflow.SessionsClient({
 
 const projectId = "chatbotagent-tfft"; // Replace with your Dialogflow ES project ID
 
-// Allow requests from your GitHub Pages domain
+// Allow requests from all origins
 const corsOptions = {
-  origin: ["https://abdullatifal4685.github.io"], // Add your GitHub Pages URL here
+  origin: "*", // Allow all origins
   methods: ["GET", "POST"], // Allow specific HTTP methods
   allowedHeaders: ["Content-Type"], // Allow specific headers
 };
 
-app.use(cors(corsOptions));
-app.use(express.json());
+app.use(cors(corsOptions)); // Use the updated CORS options
+app.use(express.json()); // Parse JSON requests
 
 // Chat endpoint
 app.post("/chat", async (req, res) => {
