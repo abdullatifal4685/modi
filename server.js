@@ -81,35 +81,6 @@ app.post("/chat", async (req, res) => {
   }
 });
 
-// Webhook endpoint
-app.post("/webhook", (req, res) => {
-  const intentName = req.body.queryResult.intent.displayName; // Get the intent name
-  const userInput = req.body.queryResult.queryText; // Get the user's input
-
-  console.log(`Intent: ${intentName}`);
-  console.log(`User Input: ${userInput}`);
-
-  // Friendly and empathetic persona response
-  let responseText = "";
-
-  // Add dynamic content based on the intent
-  if (intentName === "What_is_Learning_Organization") {
-    responseText = "Oh, that's a great question! 🌟 A Learning Organization is a system that helps people grow and learn together. It's all about teamwork and continuous improvement! Let me know if you'd like more details. 😊";
-  } else if (intentName === "Knowledge Management") {
-    responseText = "I'm glad you asked! 📚 Knowledge Management is about sharing and managing knowledge to help everyone succeed. It's like building a library of wisdom for your team! How can I assist you further? 😊";
-  } else if (intentName === "Default Welcome Intent") {
-    responseText = "Hi there! 👋 I'm MODI, your friendly assistant. How can I brighten your day today? 😊";
-  } else {
-    // Default fallback response
-    responseText = "Hmm, I’m not sure about that, but I’d love to help! Could you try rephrasing your question? 💡";
-  }
-
-  // Send the response back to Dialogflow
-  res.json({
-    fulfillmentText: responseText,
-  });
-});
-
 // Example endpoint
 app.get("/", (req, res) => {
   res.send("Server is running!");
