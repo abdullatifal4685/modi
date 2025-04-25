@@ -335,6 +335,8 @@
     let isVoiceMode = false; // Track whether voice input mode is active
     let recognition; // Speech recognition instance
     let isSpeaking = false; // Flag to track if the bot is speaking
+    let activeContexts = []; // Track active contexts
+    const sessionId = "user-session-123"; // Unique session ID for the user
 
     // Show chat interface when "Start" is clicked
     startBtn.addEventListener("click", () => {
@@ -359,19 +361,33 @@
     // Fetch chatbot response from the backend
     async function getChatbotResponse(message) {
       try {
+        console.log("Sending Message:", message);
+        console.log("Active Contexts:", activeContexts);
+
         const response = await fetch(`${baseUrl}/chat`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ input: message }),
+          body: JSON.stringify({
+            input: message,
+            sessionId: sessionId, // Include session ID
+            contexts: activeContexts, // Include active contexts
+          }),
         });
 
         const data = await response.json();
+        console.log("Backend Response:", data);
+
         if (data.error) {
           console.error("Backend Error:", data.error);
           return `Oops, something went wrong! 😔 Please try again later.`;
         }
+
+        // Update active contexts from the response
+        activeContexts = data.contexts || [];
+        console.log("Updated Active Contexts:", activeContexts);
+
         return data.reply || "Hmm, I’m not sure about that. Could you rephrase it? 😊";
       } catch (error) {
         console.error("Fetch Error:", error);
