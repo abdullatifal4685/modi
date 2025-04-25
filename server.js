@@ -26,37 +26,57 @@ app.use(express.json()); // Parse JSON requests
 // Chat endpoint
 app.post("/chat", async (req, res) => {
   const userInput = req.body.input;
-  const userId = req.body.userId || uuid.v4(); // Generate a unique session ID if not provided
+  const userId = req.body.sessionId || uuid.v4(); // Use sessionId from frontend or generate one
+  const contexts = req.body.contexts || []; // Get active contexts from the request
 
   console.log("User Input:", userInput);
+  console.log("Received Contexts:", contexts);
 
   if (!userInput || typeof userInput !== "string") {
     return res.status(400).json({ error: "Invalid input. Please provide a valid message." });
   }
 
   try {
-    // Create a session path
     const sessionPath = sessionClient.projectAgentSessionPath(projectId, userId);
 
-    // Send the user input to Dialogflow ES
     const request = {
       session: sessionPath,
       queryInput: {
         text: {
           text: userInput,
-          languageCode: "en", // Set the language code
+          languageCode: "en",
         },
       },
     };
 
+    if (contexts.length > 0) {
+      request.queryParams = {
+        contexts: contexts.map((context) => ({
+          name: `${sessionPath}/contexts/${context.name}`,
+          lifespanCount: context.lifespanCount,
+        })),
+      };
+    }
+
+    console.log("Dialogflow Request:", JSON.stringify(request, null, 2));
+
     const [response] = await sessionClient.detectIntent(request);
     const botResponse = response.queryResult.fulfillmentText || "I'm sorry, I couldn't process your request.";
 
-    console.log("Dialogflow ES Response:", botResponse);
+    const updatedContexts = response.queryResult.outputContexts.map((context) => ({
+      name: context.name.split("/").pop(),
+      lifespanCount: context.lifespanCount,
+    }));
 
-    res.json({ reply: botResponse });
+    console.log("Dialogflow Response:", botResponse);
+    console.log("Updated Contexts:", updatedContexts);
+
+    res.json({
+      reply: botResponse,
+      contexts: updatedContexts, // Ensure updated contexts are sent back
+    });
   } catch (error) {
-    console.error("Dialogflow ES Error:", error);
+    console.error("Dialogflow Error:", error);
     res.status(500).json({ error: "Failed to fetch response from Dialogflow ES." });
   }
 });
