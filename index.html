@@ -351,9 +351,12 @@
       chatbox.scrollTop = chatbox.scrollHeight; // Auto-scroll to the latest message
     }
 
-    // Fetch chatbot response from the backend
-    const baseUrl = "https://modi-v5cq.onrender.com"; // Use the deployed URL
+    // Determine the base URL dynamically
+    const baseUrl = window.location.hostname === "localhost"
+      ? "http://localhost:5000" // Local server URL
+      : "https://modi-v5cq.onrender.com"; // Render server URL
 
+    // Fetch chatbot response from the backend
     async function getChatbotResponse(message) {
       try {
         const response = await fetch(`${baseUrl}/chat`, {
