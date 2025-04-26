@@ -448,6 +448,7 @@
     // Voice Input (Speech-to-Speech)
     function startVoiceInput() {
       if (!recognition) {
+        // Initialize recognition only once
         recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
         recognition.lang = "en-US"; // Set language
         recognition.continuous = true; // Keep listening continuously
@@ -471,16 +472,17 @@
         };
 
         recognition.onend = () => {
-          if (isVoiceMode) {
-            recognition.start(); // Restart recognition if voice mode is still active
+          if (isVoiceMode && !isSpeaking) {
+            recognition.start(); // Restart recognition only if not speaking
           }
         };
       }
 
-      // Request microphone permission when starting voice input
+      // Request microphone permission and start recognition
       navigator.mediaDevices.getUserMedia({ audio: true })
         .then(() => {
           recognition.start(); // Start recognition if permission is granted
+          console.log("Voice input started");
         })
         .catch((error) => {
           console.error("Microphone permission denied:", error);
@@ -496,7 +498,10 @@
     function speak(text) {
       isSpeaking = true; // Set flag to true while speaking
 
-      const utterance = new SpeechSynthesisUtterance(text);
+      // Remove emojis (including keycap emojis) from the text for voice output
+      const textWithoutEmojis = text.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{FE0F}\u{20E3}]/gu, '');
+
+      const utterance = new SpeechSynthesisUtterance(textWithoutEmojis);
       utterance.lang = "en-US"; // Set language
       utterance.pitch = 1.2; // Slightly higher pitch for a friendly tone
       utterance.rate = 1; // Normal speaking rate
