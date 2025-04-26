@@ -348,7 +348,7 @@
     function addMessageToChatbox(sender, message) {
       const messageDiv = document.createElement("div");
       messageDiv.classList.add("message", sender === "You" ? "user-message" : "bot-message");
-      messageDiv.textContent = message;
+      messageDiv.innerHTML = message.replace(/\n/g, "<br>"); // Replace \n with <br> for line breaks
       chatbox.appendChild(messageDiv);
       chatbox.scrollTop = chatbox.scrollHeight; // Auto-scroll to the latest message
     }
