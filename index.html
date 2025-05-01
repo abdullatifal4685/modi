@@ -275,6 +275,18 @@
       transform: translateY(-2px); /* Slight lift effect */
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow on hover */
     }
+
+    #six-prompts-container {
+      display: flex !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+
+    #predefined-prompts {
+      display: flex !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
   </style>
 </head>
 <body>
@@ -358,6 +370,58 @@
       ? "http://localhost:5000" // Local server URL
       : "https://modi-v5cq.onrender.com"; // Render server URL
 
+    // Function to dynamically add six predefined prompts
+    function addSixPrompts() {
+      console.log("addSixPrompts called");
+      const predefinedPromptsContainer = document.getElementById("predefined-prompts");
+      if (!predefinedPromptsContainer) {
+        console.error("Predefined prompts container not found");
+        return;
+      }
+
+      // Clear existing prompts (previous 4 prompts)
+      predefinedPromptsContainer.innerHTML = "";
+
+      // Ensure the container is visible
+      predefinedPromptsContainer.style.display = "flex";
+      predefinedPromptsContainer.style.visibility = "visible";
+      predefinedPromptsContainer.style.opacity = "1";
+
+      const sixPromptsContainer = document.createElement("div");
+      sixPromptsContainer.id = "six-prompts-container";
+      sixPromptsContainer.style.display = "flex";
+      sixPromptsContainer.style.flexWrap = "wrap";
+      sixPromptsContainer.style.gap = "10px";
+
+      const steps = [
+        { text: "Identification", icon: "fas fa-search" },
+        { text: "Documentation", icon: "fas fa-book" },
+        { text: "Organization", icon: "fas fa-folder" },
+        { text: "Dissemination", icon: "fas fa-share-alt" },
+        { text: "Application", icon: "fas fa-tools" },
+        { text: "Monitoring", icon: "fas fa-chart-line" },
+      ];
+
+      steps.forEach((step) => {
+        const promptDiv = document.createElement("div");
+        promptDiv.classList.add("prompt");
+        promptDiv.innerHTML = `<i class="${step.icon}"></i> ${step.text}`;
+        promptDiv.addEventListener("click", async () => {
+          const message = step.text;
+          addMessageToChatbox("You", message);
+          const response = await getChatbotResponse(message);
+          addMessageToChatbox("Chatbot", response);
+
+          // Remove the six prompts after interaction
+          sixPromptsContainer.remove();
+        });
+        sixPromptsContainer.appendChild(promptDiv);
+      });
+
+      predefinedPromptsContainer.appendChild(sixPromptsContainer);
+      console.log("Six prompts added to predefined-prompts container");
+    }
+
     // Fetch chatbot response from the backend
     async function getChatbotResponse(message) {
       try {
@@ -378,6 +442,7 @@
 
         const data = await response.json();
         console.log("Backend Response:", data);
+        console.log("Chatbot Response:", data.reply);
 
         if (data.error) {
           console.error("Backend Error:", data.error);
@@ -387,6 +452,12 @@
         // Update active contexts from the response
         activeContexts = data.contexts || [];
         console.log("Updated Active Contexts:", activeContexts);
+
+        // Check if the response matches the specific KM answer with six steps
+        if (data.reply.includes("✨ Here’s a quick look at the 6 key steps we follow:")) {
+          console.log("Triggering addSixPrompts");
+          addSixPrompts(); // Add the six predefined prompts
+        }
 
         return data.reply || "Hmm, I’m not sure about that. Could you rephrase it? 😊";
       } catch (error) {
@@ -399,6 +470,13 @@
     sendBtn.addEventListener("click", async () => {
       const message = userInput.value.trim();
       if (!message) return;
+
+      // Hide the six prompts when the user sends a new message
+      const sixPromptsContainer = document.getElementById("six-prompts-container");
+      if (sixPromptsContainer) {
+        sixPromptsContainer.remove();
+      }
+
       addMessageToChatbox("You", message);
       userInput.value = "";
       const response = await getChatbotResponse(message);
@@ -415,6 +493,13 @@
       if (event.key === "Enter") {
         const message = userInput.value.trim();
         if (!message) return;
+
+        // Hide the six prompts when the user sends a new message
+        const sixPromptsContainer = document.getElementById("six-prompts-container");
+        if (sixPromptsContainer) {
+          sixPromptsContainer.remove();
+        }
+
         addMessageToChatbox("You", message);
         userInput.value = "";
         const response = await getChatbotResponse(message);
@@ -531,18 +616,19 @@
     });
 
     // Handle predefined prompt clicks
-    const promptElements = document.querySelectorAll(".prompt");
     const predefinedPromptsContainer = document.getElementById("predefined-prompts");
+    const promptElements = document.querySelectorAll(".prompt");
 
     promptElements.forEach((prompt) => {
       prompt.addEventListener("click", async () => {
         const message = prompt.textContent.trim(); // Get the text of the clicked prompt
         addMessageToChatbox("You", message); // Add the message to the chatbox
-        const response = await getChatbotResponse(message); // Fetch the chatbot response
-        addMessageToChatbox("Chatbot", response); // Display the chatbot response
 
-        // Hide the predefined prompts container
-        predefinedPromptsContainer.style.display = "none";
+        // Clear all predefined prompts (previous 4 prompts)
+        predefinedPromptsContainer.innerHTML = "";
+
+        const response = await getChatbotResponse(message); // Fetch the chatbot response
+        addMessageToChatbox("Chatbot", response);
 
         // Speak the bot's response if voice mode is active
         if (isVoiceMode) {
