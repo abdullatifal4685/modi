@@ -350,6 +350,9 @@
     let activeContexts = []; // Track active contexts
     const sessionId = "user-session-123"; // Unique session ID for the user
 
+    // Always use the online server URL
+    const baseUrl = "https://modi-v5cq.onrender.com";
+
     // Show chat interface when "Start" is clicked
     startBtn.addEventListener("click", () => {
       homepage.style.display = "none";
@@ -364,11 +367,6 @@
       chatbox.appendChild(messageDiv);
       chatbox.scrollTop = chatbox.scrollHeight; // Auto-scroll to the latest message
     }
-
-    // Determine the base URL dynamically
-    const baseUrl = window.location.hostname === "localhost"
-      ? "http://localhost:5000" // Local server URL
-      : "https://modi-v5cq.onrender.com"; // Render server URL
 
     // Function to dynamically add six predefined prompts
     function addSixPrompts() {
