@@ -353,6 +353,22 @@
     // Always use the online server URL
     const baseUrl = "https://modi-v5cq.onrender.com";
 
+    // Utility function to fetch with timeout
+    async function fetchWithTimeout(resource, options = {}, timeout = 5000) {
+      const controller = new AbortController();
+      const id = setTimeout(() => controller.abort(), timeout);
+      options.signal = controller.signal;
+
+      try {
+        const response = await fetch(resource, options);
+        clearTimeout(id);
+        return response;
+      } catch (error) {
+        clearTimeout(id);
+        throw error;
+      }
+    }
+
     // Show chat interface when "Start" is clicked
     startBtn.addEventListener("click", () => {
       homepage.style.display = "none";
@@ -426,7 +442,7 @@
         console.log("Sending Message:", message);
         console.log("Active Contexts:", activeContexts);
 
-        const response = await fetch(`${baseUrl}/chat`, {
+        const response = await fetchWithTimeout(`${baseUrl}/chat`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -459,6 +475,10 @@
 
         return data.reply || "Hmm, I’m not sure about that. Could you rephrase it? 😊";
       } catch (error) {
+        if (error.name === "AbortError") {
+          console.error("Fetch Timeout Error:", error);
+          return "The server is taking too long to respond. Please try again later. ⏳";
+        }
         console.error("Fetch Error:", error);
         return "Oh no! 😔 I couldn’t connect to the server. Please check your connection and try again.";
       }
