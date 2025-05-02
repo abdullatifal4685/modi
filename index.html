@@ -454,7 +454,7 @@
         console.log("Updated Active Contexts:", activeContexts);
 
         // Check if the response matches the specific KM answer with six steps
-        if (data.reply.includes("✨ Here’s a quick look at the 6 key steps we follow:")) {
+        if (data.reply.includes("Here’s a quick look at the 6 key steps we follow:")) {
           console.log("Triggering addSixPrompts");
           addSixPrompts(); // Add the six predefined prompts
         }
